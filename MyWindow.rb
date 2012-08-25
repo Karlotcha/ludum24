@@ -4,6 +4,12 @@ class MyWindow < Gosu::Window
 		self.caption = 'Ludumia'
 		@background_image = Gosu::Image.new(self, "gfx/background.jpg", true)
 		
+		@menu = Array.new
+		@menu_count = 0
+		@menu_timer = 0
+		@menu.push(Gosu::Image.new(self, "gfx/title.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/title2.jpg", true))
+		
 		@ludumis = Array.new
 		@skulls  = Array.new
 		@hearts  = Array.new
@@ -24,9 +30,21 @@ class MyWindow < Gosu::Window
 		end
 		
 		@font = Gosu::Font.new(self, Gosu::default_font_name, 20)
+		
+		@song = Gosu::Song.new(self, "sfx/song.ogg")
+		@song.play(true)
 	end
 
 	def update
+		
+		#menu
+		if @menu[@menu_count]
+			@menu_timer += 1
+			@menu_timer %= 100
+			return true 
+		end
+	
+		#game over
 		@hearts.each  do |heart|
 			heart.timestamp -= 1
 			@hearts.delete(heart) if heart.timestamp <= 0
@@ -52,6 +70,7 @@ class MyWindow < Gosu::Window
 			return true
 		end
 		
+		#controls in game
 		if button_down? Gosu::KbLeft then
 			@princess.left
 		end
@@ -98,6 +117,8 @@ class MyWindow < Gosu::Window
 		@hearts.each	{|heart| heart.draw}
 	    @princess.draw
 		@ludumis.each	{|lud| 	 lud.draw}
+		
+		@menu[@menu_count+@menu_timer/50].draw(0, 0, 10) if @menu[@menu_count+@menu_timer/50]
 	end
 	
 	def win lud
@@ -113,5 +134,10 @@ class MyWindow < Gosu::Window
 		if id == Gosu::KbEscape
 			close
 		end
+		
+		if id == Gosu::KbReturn
+			@menu_count += 2
+		end
+		
 	end
 end
