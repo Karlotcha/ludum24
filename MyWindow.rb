@@ -1,4 +1,6 @@
 class MyWindow < Gosu::Window
+	attr_accessor 	:nb_kills
+
 	def initialize
 		super 800, 800, false
 		self.caption = 'Ludumia'
@@ -28,29 +30,78 @@ class MyWindow < Gosu::Window
 		@menu.push(Gosu::Image.new(self, "gfx/command4.jpg", true))
 		@menu.push(Gosu::Image.new(self, "gfx/command4.jpg", true))
 		
+		@lose_screen 	= Gosu::Image.new(self, "gfx/gameover.bmp", true)
+		@win_screen 	= Gosu::Image.new(self, "gfx/youwin.bmp", true)
+		@score_screen 	= Gosu::Image.new(self, "gfx/youwin2.jpg", true)
+		
 		@ludumis = Array.new
 		@skulls  = Array.new
 		@hearts  = Array.new
 		@chosen_ludumi
 		
-		@game_over = false
-		@lose = false
+		@nb_kills		 = 0
+ 		@timestamp_start = Time.new #re-initialized when the game actually starts 
+		@time_final		 = 0
 		
-		for i in 0..15 do
-			@ludumis[i] = Ludumi.new(self)
+		@game_over 	= false
+		@lose 		= false
+		@score 		= false
+		
+		@princess = Princess.new(self)
+		for i in 0..11 do
+			too_easy = true 
+			while too_easy
+				@ludumis[i] = Ludumi.new(self)
+				too_easy = false
+				# @ludumis.each {|lud| too_easy = false if @princess.img == lud.img} #test win screen
+				if 	(@princess.l == @ludumis[i].l && @princess.t == @ludumis[i].t) || 
+					(@princess.l == @ludumis[i].l && @princess.r == @ludumis[i].r) || 
+					(@princess.t == @ludumis[i].t && @princess.r == @ludumis[i].r) then 
+					too_easy = true
+				end
+			end
 		end
 		
-		too_easy = true 
-		while too_easy
-			@princess = Princess.new(self)
-			too_easy = false
-			@ludumis.each {|lud| too_easy = true if @princess.img == lud.img}
-		end
-		
-		@font = Gosu::Font.new(self, Gosu::default_font_name, 20)
+		@font = Gosu::Font.new(self, "fonts/AndBasR.ttf", 50)
 		
 		@song = Gosu::Song.new(self, "sfx/song.ogg")
 		@song_title = Gosu::Song.new(self, "sfx/title.ogg")
+		@song_title.play(true)
+	end
+	
+	def restart
+		@menu_count = 0
+		@menu_timer = 0
+		
+		@ludumis = Array.new
+		@skulls  = Array.new
+		@hearts  = Array.new
+		@chosen_ludumi = 0
+		
+		@nb_kills		 = 0
+ 		@timestamp_start = Time.new
+		@time_final		 = 0
+		
+		@game_over 	= false
+		@lose 		= false
+		@score 		= false
+		
+		@princess = Princess.new(self)
+		for i in 0..11 do
+			too_easy = true 
+			while too_easy
+				@ludumis[i] = Ludumi.new(self)
+				too_easy = false
+				# @ludumis.each {|lud| too_easy = false if @princess.img == lud.img} #test win screen
+				if 	(@princess.l == @ludumis[i].l && @princess.t == @ludumis[i].t) || 
+					(@princess.l == @ludumis[i].l && @princess.r == @ludumis[i].r) || 
+					(@princess.t == @ludumis[i].t && @princess.r == @ludumis[i].r) then 
+					too_easy = true
+				end
+			end
+		end
+		
+		@song.stop
 		@song_title.play(true)
 	end
 
@@ -138,18 +189,24 @@ class MyWindow < Gosu::Window
 		@ludumis.each	{|lud| 	 lud.draw}
 		
 		@menu[@menu_count+@menu_timer/50].draw(0, 0, 10) if @menu[@menu_count+@menu_timer/50]
+		
+		@lose_screen.draw(0, 0, 10) if @lose
+		@win_screen.draw(0, 0, 10) if @game_over
+		
+		if @score
+			@score_screen.draw(0,0,20)
+			@font.draw(@nb_kills,370,190,201, 1, 1, Gosu::Color.new(0xffC0C0C0))
+			@font.draw(@time_final,370,390,201, 1, 1, Gosu::Color.new(0xffC0C0C0))
+		end
 	end
 	
 	def win lud
 		@game_over = true
 		@chosen_ludumi = lud
+		@time_final = (Time.new - @timestamp_start).to_i
 	end
-	
-	def lose
-		@lose = true
-	end
-	
-	def button_down(id)
+
+	def button_down(id) #wtf is this code?! hu ho... huuuuu...
 		if id == Gosu::KbEscape
 			close
 		end
@@ -176,6 +233,7 @@ class MyWindow < Gosu::Window
 			@menu_count = 100
 			@song_title.stop
 			@song.play(true)
+			@timestamp_start = Time.new
 			return true
 		end
 		
@@ -185,12 +243,28 @@ class MyWindow < Gosu::Window
 			return true
 		end
 		
+		if id == Gosu::KbReturn && @lose
+			restart
+			return true
+		end		
+		
+		if id == Gosu::KbReturn && @score
+			restart
+			return true
+		end
+		
+		if id == Gosu::KbReturn && @game_over
+			@score = true			
+			return true
+		end
+		
 		if id == Gosu::KbReturn && @menu_count >= 4
 			@menu_count += 2
 			
 			unless @menu[@menu_count+@menu_timer/50]
 				@song_title.stop
 				@song.play(true)
+				@timestamp_start = Time.new
 			end
 			
 			return true

@@ -1,5 +1,5 @@
 class Princess
-	attr_reader :img
+	attr_reader :img, :l, :t, :r
 	
 	def initialize(window)
 		@l = (rand 3).to_s
@@ -35,6 +35,7 @@ class Princess
 				if  @img != lud.img
 					skulls.push(Skull.new(lud.x, lud.y, window))
 					@hiii.play
+					window.nb_kills += 1
 					true
 				else
 					window.win(lud)
