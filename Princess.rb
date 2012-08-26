@@ -36,6 +36,26 @@ class Princess
 					skulls.push(Skull.new(lud.x, lud.y, window))
 					@hiii.play
 					window.nb_kills += 1
+					
+					ludumis.each do |lud_panic|
+						if Gosu::distance(@x, @y, lud_panic.x, lud_panic.y) < 120 then
+							lud_panic.panic  += 1
+							lud_panic.timer	  = -25
+							if rand(2) == 1 then
+								# left
+								lud_panic.distorted_coef = 0 if @x >= lud_panic.x
+								# right
+								lud_panic.distorted_coef = 1 if @x <  lud_panic.x
+							else
+							# top
+								lud_panic.distorted_coef = 2 if @y >=  lud_panic.y
+								# bot
+								lud_panic.distorted_coef = 3 if @y < lud_panic.y
+							end
+							
+						end
+					end
+					
 					true
 				else
 					window.win(lud)

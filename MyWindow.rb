@@ -1,5 +1,5 @@
 class MyWindow < Gosu::Window
-	attr_accessor 	:nb_kills
+	attr_accessor 	:nb_kills, :princess
 
 	def initialize
 		super 800, 800, false
@@ -48,7 +48,7 @@ class MyWindow < Gosu::Window
 		@score 		= false
 		
 		@princess = Princess.new(self)
-		for i in 0..11 do
+		for i in 0...12 do
 			too_easy = true 
 			while too_easy
 				@ludumis[i] = Ludumi.new(self)
@@ -63,6 +63,7 @@ class MyWindow < Gosu::Window
 		end
 		
 		@font = Gosu::Font.new(self, "fonts/AndBasR.ttf", 50)
+		@sft = Gosu::Font.new(self, "fonts/AndBasR.ttf", 20)
 		
 		@song = Gosu::Song.new(self, "sfx/song.ogg")
 		@song_title = Gosu::Song.new(self, "sfx/title.ogg")
@@ -87,7 +88,7 @@ class MyWindow < Gosu::Window
 		@score 		= false
 		
 		@princess = Princess.new(self)
-		for i in 0..11 do
+		for i in 0...12 do
 			too_easy = true 
 			while too_easy
 				@ludumis[i] = Ludumi.new(self)
@@ -186,7 +187,10 @@ class MyWindow < Gosu::Window
 		@skulls.each	{|skull| skull.draw}
 		@hearts.each	{|heart| heart.draw}
 	    @princess.draw
-		@ludumis.each	{|lud| 	 lud.draw}
+		@ludumis.each	do |lud| 	 
+			lud.draw
+			@sft.draw(lud.panic_text,lud.x,lud.y - 16,2, 1, 1, Gosu::Color.new(0xffC0C0C0)) if lud.panic > 0
+		end
 		
 		@menu[@menu_count+@menu_timer/50].draw(0, 0, 10) if @menu[@menu_count+@menu_timer/50]
 		
@@ -195,8 +199,8 @@ class MyWindow < Gosu::Window
 		
 		if @score
 			@score_screen.draw(0,0,20)
-			@font.draw(@nb_kills,370,190,201, 1, 1, Gosu::Color.new(0xffC0C0C0))
-			@font.draw(@time_final,370,390,201, 1, 1, Gosu::Color.new(0xffC0C0C0))
+			@font.draw(@nb_kills,370,190,21, 1, 1, Gosu::Color.new(0xffC0C0C0))
+			@font.draw(@time_final,370,390,21, 1, 1, Gosu::Color.new(0xffC0C0C0))
 		end
 	end
 	

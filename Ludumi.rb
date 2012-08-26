@@ -1,5 +1,5 @@
 class Ludumi
-	attr_accessor 	:img, :libido, :image, :lifespan
+	attr_accessor 	:img, :libido, :image, :lifespan, :panic, :distorted_coef, :timer, :panic_text
 	attr_reader 	:x, :y, :l, :t, :r
 	
 	def initialize(window)
@@ -20,6 +20,9 @@ class Ludumi
 		@timer = 0
 		
 		@lifespan = 1000 + rand(2000)
+		
+		@panic_text = ['hii!!', 'aah!!', 'save me!', 'oh GOD', 'dont wanz die', 'bitch!', 'stop her!', 'holy shit'][rand(8)]
+		@panic = 0
 	end
 
 	def put(x, y)
@@ -36,64 +39,83 @@ class Ludumi
 		
 		if @timer >= 50 
 			@distorted_coef = rand 4
+			@panic = 0
 			@timer = 0
 		end
 	
 		if @x <= 768  
-			@x += rand 4 unless @distorted_coef == 0
+			@x += rand(4)+panic unless @distorted_coef == 0
 		else
-			@distorted_coef = 0
+			@distorted_coef = 0 # bounce on walls
 		end
 		
 		if @x >= 0
-			@x -= rand 4  unless @distorted_coef == 1
+			@x -= rand(4)+panic unless @distorted_coef == 1
 		else
 			@distorted_coef = 1
 		end
 		
 		if @y <= 776
-			@y += rand 4 if @y <= 776 unless @distorted_coef == 2
+			@y += rand(4)+panic if @y <= 776 unless @distorted_coef == 2
 		else
 			@distorted_coef = 2
 		end
 		
 		if @y >= 0
-			@y -= rand 4 unless @distorted_coef == 3
+			@y -= rand(4)+panic unless @distorted_coef == 3
 		else
 			@distorted_coef = 3
 		end
 	end
 	
 	def sex(lud, ludumis, hearts, window)
+		princess = window.princess
+		
+		# trigger mutations to make the game easier
+		needl = true
+		needt = true
+		needr = true
+		
+		ludumis.each do |lud|
+			needl = false if lud.l == princess.l
+			needt = false if lud.t == princess.t
+			needr = false if lud.r == princess.r
+		end
+	
 		if rand(2) == 1
 			l = @l
+			l = princess.l if needl
 		else
 			l = lud.l
 		end
 		
 		if rand(2) == 1
 			t = @t
+			t = princess.t if needt
 		else
 			t = lud.t
 		end
 		
 		if rand(2) == 1
 			r = @r
+			r = princess.r if needr
 		else 
 			r = lud.r
 		end
 		
-		img = "gfx/" + l + "_" + t + "_" + r + ".bmp"
-	
-		baby_lud 	 	= Ludumi.new(window)
-		baby_lud.img 	= img
+		baby_lud = Ludumi.new(window)
+		
+		# mutations
 		if rand(80) != 0
+			img = "gfx/" + l + "_" + t + "_" + r + ".bmp"
+			baby_lud.img 	= img
 			baby_lud.image 	= Gosu::Image.new(window, img, false)
+			baby_lud.genetic(l, t, r)
 		else
 			baby_lud.lifespan = 5000
 		end
+		
 		baby_lud.libido = 0
-		baby_lud.genetic(l, t, r)
 		baby_lud.put(lud.x, lud.y)
 		hearts.push(Heart.new(lud.x, lud.y, window))
 		ludumis.push baby_lud
