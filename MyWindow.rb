@@ -9,6 +9,24 @@ class MyWindow < Gosu::Window
 		@menu_timer = 0
 		@menu.push(Gosu::Image.new(self, "gfx/title.jpg", true))
 		@menu.push(Gosu::Image.new(self, "gfx/title2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/start.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/start2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/instructions.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/instructions2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story3.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/story3.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command2.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command3.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command3.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command4.jpg", true))
+		@menu.push(Gosu::Image.new(self, "gfx/command4.jpg", true))
 		
 		@ludumis = Array.new
 		@skulls  = Array.new
@@ -32,7 +50,8 @@ class MyWindow < Gosu::Window
 		@font = Gosu::Font.new(self, Gosu::default_font_name, 20)
 		
 		@song = Gosu::Song.new(self, "sfx/song.ogg")
-		@song.play(true)
+		@song_title = Gosu::Song.new(self, "sfx/title.ogg")
+		@song_title.play(true)
 	end
 
 	def update
@@ -135,8 +154,46 @@ class MyWindow < Gosu::Window
 			close
 		end
 		
-		if id == Gosu::KbReturn
+		if id == Gosu::KbReturn && @menu_count == 0
+			@menu_count = 2
+			@menu_timer = 0
+			return true
+		end		
+		
+		if id == Gosu::KbDown && @menu_count == 2
+			@menu_count = 4
+			@menu_timer = 0
+			return true
+		end
+		
+		if id == Gosu::KbUp && @menu_count == 4
+			@menu_count = 2
+			@menu_timer = 0
+			return true
+		end
+		
+		if id == Gosu::KbReturn && @menu_count == 2
+			@menu_count = 100
+			@song_title.stop
+			@song.play(true)
+			return true
+		end
+		
+		if id == Gosu::KbReturn && @menu_count == 4
+			@menu_count = 6 #story
+			@menu_timer = 0
+			return true
+		end
+		
+		if id == Gosu::KbReturn && @menu_count >= 4
 			@menu_count += 2
+			
+			unless @menu[@menu_count+@menu_timer/50]
+				@song_title.stop
+				@song.play(true)
+			end
+			
+			return true
 		end
 		
 	end
