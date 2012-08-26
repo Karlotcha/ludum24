@@ -65,8 +65,9 @@ class MyWindow < Gosu::Window
 		@font = Gosu::Font.new(self, "fonts/AndBasR.ttf", 50)
 		@sft = Gosu::Font.new(self, "fonts/AndBasR.ttf", 20)
 		
-		@song = Gosu::Song.new(self, "sfx/song.ogg")
+		@song 		= Gosu::Song.new(self, "sfx/song.ogg")
 		@song_title = Gosu::Song.new(self, "sfx/title.ogg")
+		@bip_menu 	= Gosu::Sample.new(self, "sfx/menu.ogg")
 		@song_title.play(true)
 	end
 	
@@ -218,18 +219,21 @@ class MyWindow < Gosu::Window
 		if id == Gosu::KbReturn && @menu_count == 0
 			@menu_count = 2
 			@menu_timer = 0
+			@bip_menu.play
 			return true
 		end		
 		
 		if id == Gosu::KbDown && @menu_count == 2
 			@menu_count = 4
 			@menu_timer = 0
+			@bip_menu.play
 			return true
 		end
 		
 		if id == Gosu::KbUp && @menu_count == 4
 			@menu_count = 2
 			@menu_timer = 0
+			@bip_menu.play
 			return true
 		end
 		
@@ -238,27 +242,32 @@ class MyWindow < Gosu::Window
 			@song_title.stop
 			@song.play(true)
 			@timestamp_start = Time.new
+			@bip_menu.play
 			return true
 		end
 		
 		if id == Gosu::KbReturn && @menu_count == 4
 			@menu_count = 6 #story
 			@menu_timer = 0
+			@bip_menu.play
 			return true
 		end
 		
 		if id == Gosu::KbReturn && @lose
 			restart
+			@bip_menu.play
 			return true
 		end		
 		
 		if id == Gosu::KbReturn && @score
 			restart
+			@bip_menu.play
 			return true
 		end
 		
 		if id == Gosu::KbReturn && @game_over
-			@score = true			
+			@score = true	
+			@bip_menu.play
 			return true
 		end
 		
@@ -271,6 +280,7 @@ class MyWindow < Gosu::Window
 				@timestamp_start = Time.new
 			end
 			
+			@bip_menu.play
 			return true
 		end
 		

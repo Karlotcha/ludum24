@@ -10,7 +10,12 @@ class Princess
 		@image = Gosu::Image.new(window, @img, false)
 		@x = @y = 400
 		
-		@hiii = Gosu::Sample.new(window, "sfx/hiii.wav")
+		@hiii = [Gosu::Sample.new(window, "sfx/hiii.wav"),
+				 Gosu::Sample.new(window, "sfx/hiii2.ogg"),
+				 Gosu::Sample.new(window, "sfx/hiii3.ogg"),
+				 Gosu::Sample.new(window, "sfx/hiii4.ogg"),
+				 Gosu::Sample.new(window, "sfx/hiii5.ogg"),
+				 Gosu::Sample.new(window, "sfx/hiii6.ogg")]
 	end
 
 	def right
@@ -34,7 +39,7 @@ class Princess
 			if Gosu::distance(@x, @y, lud.x, lud.y) < 20 then
 				if  @img != lud.img
 					skulls.push(Skull.new(lud.x, lud.y, window))
-					@hiii.play
+					@hiii[rand(6)].play
 					window.nb_kills += 1
 					
 					ludumis.each do |lud_panic|

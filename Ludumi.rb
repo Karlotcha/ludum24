@@ -111,8 +111,6 @@ class Ludumi
 			baby_lud.img 	= img
 			baby_lud.image 	= Gosu::Image.new(window, img, false)
 			baby_lud.genetic(l, t, r)
-		else
-			baby_lud.lifespan = 5000
 		end
 		
 		baby_lud.libido = 0
