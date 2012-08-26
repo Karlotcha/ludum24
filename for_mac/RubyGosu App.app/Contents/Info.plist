@@ -11,7 +11,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Gosu</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.libgosu.UntitledGame</string>
+	<string>ludum</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
