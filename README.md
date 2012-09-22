@@ -1,7 +1,7 @@
 ludum24
 =======
 
-Ludum Dare 24 
+Ludum Dare 24 (more informations here: http://www.ludumdare.com )
 
 Special thanks to:
 - Antoine Gersant (agersant)
